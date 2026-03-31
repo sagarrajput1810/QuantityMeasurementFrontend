@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantity Measurement</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Quantity Measurement</h1>
+            <nav id="main-nav">
+                <ul>
+                    <li><a href="#" id="nav-home" class="active">Home</a></li>
+                    <li id="li-history" class="hidden"><a href="#" id="nav-history">History</a></li>
+                    <li id="li-login"><a href="#" id="nav-login">Login</a></li>
+                    <li id="li-signup"><a href="#" id="nav-signup">Signup</a></li>
+                    <li id="li-logout" class="hidden"><a href="#" id="nav-logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Conversion Section -->
+        <section id="section-home" class="content-section">
+            <div class="card">
+                <h2>Convert Units</h2>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category">
+                        <option value="length">Length</option>
+                        <option value="weight">Weight</option>
+                        <option value="volume">Volume</option>
+                        <option value="temperature">Temperature</option>
+                    </select>
+                </div>
+
+                <div class="conversion-grid">
+                    <div class="form-group">
+                        <label for="input-value">Value</label>
+                        <input type="number" id="input-value" placeholder="Enter value" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="from-unit">From</label>
+                        <select id="from-unit"></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="to-unit">To</label>
+                        <select id="to-unit"></select>
+                    </div>
+                </div>
+
+                <div class="result-container" id="result-container">
+                    <p id="result-text">Result will appear here</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Section -->
+        <section id="section-login" class="content-section hidden">
+            <div class="card small-card">
+                <h2>Login</h2>
+                <form id="form-login">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Login</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Signup Section -->
+        <section id="section-signup" class="content-section hidden">
+            <div class="card small-card">
+                <h2>Signup</h2>
+                <form id="form-signup">
+                    <div class="form-group">
+                        <label for="signup-username">Username</label>
+                        <input type="text" id="signup-username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-email">Email</label>
+                        <input type="email" id="signup-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signup-password">Password</label>
+                        <input type="password" id="signup-password" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Signup</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- History Section -->
+        <section id="section-history" class="content-section hidden">
+            <div class="card">
+                <h2>Conversion History</h2>
+                <div class="table-container">
+                    <table id="history-table">
+                        <thead>
+                            <tr>
+                                <th>Value</th>
+                                <th>From</th>
+                                <th>Converted</th>
+                                <th>To</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Quantity Measurement App</p>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
