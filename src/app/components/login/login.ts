@@ -1,0 +1,48 @@
+import { Component, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { Auth } from '../../services/auth';
+
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
+  templateUrl: './login.html',
+  styleUrl: './login.scss',
+})
+export class Login {
+  private fb = inject(FormBuilder);
+  private authService = inject(Auth);
+  private router = inject(Router);
+
+  loginForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required]],
+  });
+
+  errorMessage: string = '';
+
+  async onSubmit() {
+    if (this.loginForm.valid) {
+      try {
+        await this.authService.login(this.loginForm.value);
+        this.router.navigate(['/dashboard']);
+      } catch (err: any) {
+        this.errorMessage = err;
+      }
+    }
+  }
+}
