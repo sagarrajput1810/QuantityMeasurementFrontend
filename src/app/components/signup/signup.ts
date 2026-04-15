@@ -35,15 +35,25 @@ export class Signup {
   });
 
   errorMessage: string = '';
+  isSubmitting = false;
 
   async onSubmit() {
-    if (this.signupForm.valid) {
-      try {
-        await this.authService.signup(this.signupForm.value);
-        this.router.navigate(['/login']);
-      } catch (err: any) {
-        this.errorMessage = err;
-      }
+    this.errorMessage = '';
+
+    if (this.signupForm.invalid) {
+      this.signupForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    try {
+      await this.authService.signup(this.signupForm.getRawValue());
+      this.router.navigate(['/login']);
+    } catch (err: any) {
+      this.errorMessage = typeof err === 'string' ? err : 'Signup failed';
+    } finally {
+      this.isSubmitting = false;
     }
   }
 }

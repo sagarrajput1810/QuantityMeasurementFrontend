@@ -34,15 +34,25 @@ export class Login {
   });
 
   errorMessage: string = '';
+  isSubmitting = false;
 
   async onSubmit() {
-    if (this.loginForm.valid) {
-      try {
-        await this.authService.login(this.loginForm.value);
-        this.router.navigate(['/dashboard']);
-      } catch (err: any) {
-        this.errorMessage = err;
-      }
+    this.errorMessage = '';
+
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.isSubmitting = true;
+
+    try {
+      await this.authService.login(this.loginForm.getRawValue());
+      this.router.navigate(['/dashboard']);
+    } catch (err: any) {
+      this.errorMessage = typeof err === 'string' ? err : 'Login failed';
+    } finally {
+      this.isSubmitting = false;
     }
   }
 }

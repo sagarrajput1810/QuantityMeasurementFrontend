@@ -29,8 +29,8 @@
           {{ errorMessage }}
         </div>
 
-        <button mat-raised-button color="primary" type="submit" [disabled]="!signupForm.valid" class="full-width">
-          Sign Up
+        <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting" class="full-width">
+          {{ isSubmitting ? 'Signing up...' : 'Sign Up' }}
         </button>
       </form>
     </mat-card-content>
