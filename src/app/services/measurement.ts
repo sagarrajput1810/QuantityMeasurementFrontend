@@ -6,7 +6,7 @@ import { Auth } from './auth';
   providedIn: 'root',
 })
 export class Measurement {
-  private baseUrl = 'http://localhost:5139/api/v1/measurements';
+  private baseUrl = 'https://measurement.azurewebsites.net/api/v1/measurements';
   private auth = inject(Auth);
 
   constructor() {}

@@ -5,7 +5,7 @@ import axios from 'axios';
   providedIn: 'root',
 })
 export class Auth {
-  private baseUrl = 'http://localhost:5139/api/v1/auth';
+  private baseUrl = 'https://measurement.azurewebsites.net/api/v1/auth';
 
   constructor() {}
 
