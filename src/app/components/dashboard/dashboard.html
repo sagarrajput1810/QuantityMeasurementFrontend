@@ -20,51 +20,149 @@
   </div>
 
   <mat-card class="converter-card">
-    <mat-card-header>
-      <mat-card-title>{{ selectedCategory }} Conversion</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      <form [formGroup]="conversionForm" class="conversion-form">
-        <div class="form-row">
-          <mat-form-field appearance="fill" class="input-field">
-            <mat-label>From Value</mat-label>
-            <input matInput type="number" formControlName="value">
-          </mat-form-field>
+    <mat-tab-group>
+      <!-- CONVERSION TAB -->
+      <mat-tab label="Conversion">
+        <mat-card-content>
+          <form [formGroup]="conversionForm" class="conversion-form">
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="input-field">
+                <mat-label>Enter Value</mat-label>
+                <input matInput type="number" formControlName="value">
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="unit-field">
+                <mat-label>From Unit</mat-label>
+                <mat-select formControlName="fromUnit">
+                  <mat-option *ngFor="let unit of units[selectedCategory]" [value]="unit">{{ unit }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            
+            <div class="target-unit-selector">
+              <mat-form-field appearance="fill">
+                <mat-label>Convert To (Target Unit)</mat-label>
+                <mat-select formControlName="toUnit">
+                  <mat-option *ngFor="let unit of units[selectedCategory]" [value]="unit">{{ unit }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
 
-          <mat-form-field appearance="fill" class="unit-field">
-            <mat-label>From Unit</mat-label>
-            <mat-select formControlName="fromUnit">
-              <mat-option *ngFor="let unit of units[selectedCategory]" [value]="unit">
-                {{ unit }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+            <div class="action-btn-container">
+              <button mat-raised-button color="primary" (click)="performConversion()">
+                Convert <mat-icon>sync</mat-icon>
+              </button>
+            </div>
 
-        <div class="arrow-container">
-          <mat-icon>compare_arrows</mat-icon>
-        </div>
+            <div class="result-display" *ngIf="convertedValue !== null">
+              Result: <strong>{{ convertedValue }} {{ conversionForm.value.toUnit }}</strong>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-tab>
 
-        <div class="form-row">
-          <mat-form-field appearance="fill" class="input-field">
-            <mat-label>To Value</mat-label>
-            <input matInput type="number" [value]="convertedValue" readonly>
-          </mat-form-field>
+      <!-- COMPARISON TAB -->
+      <mat-tab label="Comparison">
+        <mat-card-content>
+          <form [formGroup]="compareForm" class="conversion-form">
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="input-field">
+                <mat-label>Value 1</mat-label>
+                <input matInput type="number" formControlName="value1">
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="unit-field">
+                <mat-label>Unit 1</mat-label>
+                <mat-select formControlName="unit1">
+                  <mat-option *ngFor="let unit of units[selectedCategory]" [value]="unit">{{ unit }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
 
-          <mat-form-field appearance="fill" class="unit-field">
-            <mat-label>To Unit</mat-label>
-            <mat-select formControlName="toUnit">
-              <mat-option *ngFor="let unit of units[selectedCategory]" [value]="unit">
-                {{ unit }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
-      </form>
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="input-field">
+                <mat-label>Value 2</mat-label>
+                <input matInput type="number" formControlName="value2">
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="unit-field">
+                <mat-label>Unit 2</mat-label>
+                <mat-select formControlName="unit2">
+                  <mat-option *ngFor="let unit of units[selectedCategory]" [value]="unit">{{ unit }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
 
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
-      </div>
-    </mat-card-content>
+            <div class="compare-result-container" *ngIf="comparisonResult !== null">
+              <span [class.equal]="comparisonResult" [class.not-equal]="!comparisonResult">
+                {{ comparisonResult ? 'EQUAL' : 'NOT EQUAL' }}
+              </span>
+            </div>
+
+            <div class="action-btn-container">
+              <button mat-raised-button color="primary" (click)="performComparison()">
+                Compare <mat-icon>compare</mat-icon>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-tab>
+
+      <!-- OPERATIONS TAB -->
+      <mat-tab label="Operations">
+        <mat-card-content>
+          <form [formGroup]="operationForm" class="conversion-form">
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="input-field">
+                <mat-label>Value 1</mat-label>
+                <input matInput type="number" formControlName="value1">
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="unit-field">
+                <mat-label>Unit 1</mat-label>
+                <mat-select formControlName="unit1">
+                  <mat-option *ngFor="let unit of units[selectedCategory]" [value]="unit">{{ unit }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="operation-selector">
+              <mat-form-field appearance="fill">
+                <mat-label>Operation</mat-label>
+                <mat-select formControlName="operation">
+                  <mat-option value="add">Add (+)</mat-option>
+                  <mat-option value="sub">Subtract (-)</mat-option>
+                  <mat-option value="mul">Multiply (*)</mat-option>
+                  <mat-option value="div">Divide (/)</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="form-row">
+              <mat-form-field appearance="fill" class="input-field">
+                <mat-label>{{ operationForm.value.operation === 'mul' || operationForm.value.operation === 'div' ? 'Factor' : 'Value 2' }}</mat-label>
+                <input matInput type="number" formControlName="value2">
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="unit-field" *ngIf="operationForm.value.operation === 'add' || operationForm.value.operation === 'sub'">
+                <mat-label>Unit 2</mat-label>
+                <mat-select formControlName="unit2">
+                  <mat-option *ngFor="let unit of units[selectedCategory]" [value]="unit">{{ unit }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="result-display" *ngIf="operationResult">
+              Result: <strong>{{ operationResult.value }} {{ operationResult.unit }}</strong>
+            </div>
+
+            <div class="action-btn-container">
+              <button mat-raised-button color="primary" (click)="performOperation()">
+                Calculate <mat-icon>calculate</mat-icon>
+              </button>
+            </div>
+          </form>
+        </mat-card-content>
+      </mat-tab>
+    </mat-tab-group>
+
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
   </mat-card>
 </div>

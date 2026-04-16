@@ -12,57 +12,62 @@ export class Measurement {
   private baseUrl = `${getApiBaseUrl()}/measurements`;
   private auth = inject(Auth);
 
-  constructor() {}
+  private getAuthOptions() {
+    const token = this.auth.getToken();
+    return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+  }
 
   async convert(data: { value: number; fromUnit: string; toUnit: string }) {
     try {
-      return await firstValueFrom(this.http.post<any>(`${this.baseUrl}/convert`, data));
+      return await firstValueFrom(this.http.post<any>(`${this.baseUrl}/convert`, data, this.getAuthOptions()));
     } catch (error) {
       throw this.getErrorMessage(error, 'Conversion failed');
     }
   }
 
+  async compare(data: { value1: number; unit1: string; value2: number; unit2: string }) {
+    try {
+      return await firstValueFrom(this.http.post<any>(`${this.baseUrl}/compare`, data, this.getAuthOptions()));
+    } catch (error) {
+      throw this.getErrorMessage(error, 'Comparison failed');
+    }
+  }
+
+  async performOperation(data: { value1: number; unit1: string; value2: number; unit2: string; operation: string }) {
+    try {
+      return await firstValueFrom(this.http.post<any>(`${this.baseUrl}/operation`, data, this.getAuthOptions()));
+    } catch (error) {
+      throw this.getErrorMessage(error, 'Operation failed');
+    }
+  }
+
+  async deleteHistory() {
+    try {
+      return await firstValueFrom(this.http.delete<any>(`${this.baseUrl}/history`, this.getAuthOptions()));
+    } catch (error) {
+      throw this.getErrorMessage(error, 'Delete history failed');
+    }
+  }
+
   async getHistory() {
     try {
-      const token = this.auth.getToken();
-      const options = token
-        ? {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        : undefined;
-
-      return await firstValueFrom(this.http.get<any[]>(`${this.baseUrl}/history`, options));
+      return await firstValueFrom(this.http.get<any[]>(`${this.baseUrl}/history`, this.getAuthOptions()));
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 401) {
         this.auth.logout();
       }
-
       throw this.getErrorMessage(error, 'Failed to fetch history');
     }
   }
 
   private getErrorMessage(error: unknown, fallback: string): string {
     if (error instanceof HttpErrorResponse) {
-      if (error.status === 0) {
-        return 'Cannot connect to API. Start the backend server and try again.';
-      }
-
-      if (typeof error.error === 'object' && error.error && 'message' in error.error) {
-        const message = (error.error as { message?: unknown }).message;
-        if (typeof message === 'string') {
-          return message;
-        }
-      }
-
-      if (error.status === 503) {
-        return 'API service is unavailable. Please check the backend service.';
-      }
-
+      if (error.status === 0) return 'Cannot connect to API. Start backend server.';
+      const errObj = error.error as any;
+      if (errObj && errObj.message) return errObj.message;
+      if (errObj && errObj.title) return errObj.title;
       return `${fallback} (HTTP ${error.status})`;
     }
-
     return fallback;
   }
 }

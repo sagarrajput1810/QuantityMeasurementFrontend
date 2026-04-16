@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -37,6 +37,7 @@ export class Dashboard implements OnInit {
   private authService = inject(Auth);
   private measurementService = inject(Measurement);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   userName: string | null = '';
 
@@ -56,8 +57,12 @@ export class Dashboard implements OnInit {
 
   selectedCategory = 'LENGTH';
   conversionForm: FormGroup;
+  compareForm: FormGroup;
+  operationForm: FormGroup;
 
   convertedValue: number | null = null;
+  comparisonResult: boolean | null = null;
+  operationResult: { value: number, unit: string } | null = null;
   errorMessage: string = '';
 
   constructor() {
@@ -66,40 +71,102 @@ export class Dashboard implements OnInit {
       fromUnit: ['INCH'],
       toUnit: ['FEET'],
     });
+
+    this.compareForm = this.fb.group({
+      value1: [0],
+      unit1: ['INCH'],
+      value2: [0],
+      unit2: ['INCH'],
+    });
+
+    this.operationForm = this.fb.group({
+      value1: [0],
+      unit1: ['INCH'],
+      value2: [0],
+      unit2: ['INCH'],
+      operation: ['add'],
+    });
   }
 
   ngOnInit() {
     this.userName = this.authService.getUserName();
-    this.setupFormListeners();
-    this.performConversion();
-  }
-
-  setupFormListeners() {
-    this.conversionForm.valueChanges.subscribe(() => {
-      this.performConversion();
-    });
   }
 
   onCategoryChange(category: string) {
     this.selectedCategory = category;
     const categoryUnits = this.units[category];
+    const defaultUnit1 = categoryUnits[0];
+    const defaultUnit2 = categoryUnits[1] || categoryUnits[0];
+
     this.conversionForm.patchValue({
-      fromUnit: categoryUnits[0],
-      toUnit: categoryUnits[1] || categoryUnits[0],
-    }, { emitEvent: true });
+      fromUnit: defaultUnit1,
+      toUnit: defaultUnit2,
+    });
+
+    this.compareForm.patchValue({
+      unit1: defaultUnit1,
+      unit2: defaultUnit2,
+    });
+
+    this.operationForm.patchValue({
+      unit1: defaultUnit1,
+      unit2: defaultUnit1,
+    });
+
+    // Clear previous results when category changes
+    this.convertedValue = null;
+    this.comparisonResult = null;
+    this.operationResult = null;
+    this.errorMessage = '';
+    
+    this.cdr.detectChanges();
   }
 
   async performConversion() {
     const { value, fromUnit, toUnit } = this.conversionForm.value;
-    if (value === null || value === undefined) return;
-
     try {
       const result = await this.measurementService.convert({ value, fromUnit, toUnit });
       this.convertedValue = result.convertedValue;
       this.errorMessage = '';
+      this.cdr.detectChanges();
     } catch (err: any) {
       this.errorMessage = err;
       this.convertedValue = null;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async performComparison() {
+    const { value1, unit1, value2, unit2 } = this.compareForm.value;
+    try {
+      const result = await this.measurementService.compare({ value1, unit1, value2, unit2 });
+      this.comparisonResult = result.isEqual;
+      this.errorMessage = '';
+      this.cdr.detectChanges();
+    } catch (err: any) {
+      this.errorMessage = err;
+      this.comparisonResult = null;
+      this.cdr.detectChanges();
+    }
+  }
+
+  async performOperation() {
+    const { value1, unit1, value2, unit2, operation } = this.operationForm.value;
+    
+    if (operation === 'div' && value2 === 0) {
+      this.errorMessage = 'Cannot divide by zero';
+      return;
+    }
+
+    try {
+      const result = await this.measurementService.performOperation({ value1, unit1, value2, unit2, operation });
+      this.operationResult = result;
+      this.errorMessage = '';
+      this.cdr.detectChanges();
+    } catch (err: any) {
+      this.errorMessage = err;
+      this.operationResult = null;
+      this.cdr.detectChanges();
     }
   }
 
