@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Auth } from '../../services/auth';
 import { Measurement } from '../../services/measurement';
+import { ThemeService } from '../../services/theme';
 
 @Component({
   selector: 'app-dashboard',
@@ -36,6 +37,7 @@ export class Dashboard implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(Auth);
   private measurementService = inject(Measurement);
+  public themeService = inject(ThemeService);
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 

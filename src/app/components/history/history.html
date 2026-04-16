@@ -1,86 +1,96 @@
-<mat-toolbar color="primary">
-  <button mat-icon-button routerLink="/dashboard">
-    <mat-icon>arrow_back</mat-icon>
-  </button>
-  <span>Activity History</span>
-  <span class="spacer"></span>
-  <button mat-button color="warn" (click)="clearHistory()" *ngIf="dataSource.length > 0">
-    <mat-icon>delete_sweep</mat-icon> Clear All
-  </button>
+<mat-toolbar color="primary" class="main-toolbar attractive-toolbar">
+  <div class="toolbar-content">
+    <button mat-icon-button routerLink="/dashboard" title="Back to Dashboard" class="back-btn">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <span class="toolbar-title">Activity Feed</span>
+    <span class="spacer"></span>
+    <div class="toolbar-actions">
+      <button mat-icon-button (click)="themeService.toggleTheme()" class="theme-toggle-btn">
+        <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
+      <button mat-button class="clear-btn premium-clear" (click)="clearHistory()" *ngIf="dataSource.length > 0">
+        <mat-icon>delete_sweep</mat-icon> <span>Purge History</span>
+      </button>
+    </div>
+  </div>
 </mat-toolbar>
 
 <div class="history-container">
-  <mat-card class="history-card">
+  <div class="bg-gradient-overlay"></div>
+  
+  <mat-card class="history-card glass-card">
     <mat-card-content>
-      <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
+      <div *ngIf="errorMessage" class="error-message attractive-error">
+        <mat-icon>warning</mat-icon> {{ errorMessage }}
       </div>
 
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-        
-        <!-- Type Column -->
-        <ng-container matColumnDef="type">
-          <th mat-header-cell *matHeaderCellDef> Type </th>
-          <td mat-cell *matCellDef="let element"> 
-            <mat-chip-set>
-              <mat-chip [color]="getTypeColor(element.type)" selected>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource">
+          
+          <!-- Type Column -->
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef> Action Type </th>
+            <td mat-cell *matCellDef="let element"> 
+              <div class="type-badge" [class]="element.type.toLowerCase()">
                 {{ element.type }}
-              </mat-chip>
-            </mat-chip-set>
-          </td>
-        </ng-container>
+              </div>
+            </td>
+          </ng-container>
 
-        <!-- Input Value Column -->
-        <ng-container matColumnDef="inputValue">
-          <th mat-header-cell *matHeaderCellDef> Value 1 </th>
-          <td mat-cell *matCellDef="let element"> {{ element.inputValue }} </td>
-        </ng-container>
+          <!-- Input Value Column -->
+          <ng-container matColumnDef="inputValue">
+            <th mat-header-cell *matHeaderCellDef> Input </th>
+            <td mat-cell *matCellDef="let element" class="font-numeric"> {{ element.inputValue }} </td>
+          </ng-container>
 
-        <!-- From Unit Column -->
-        <ng-container matColumnDef="fromUnit">
-          <th mat-header-cell *matHeaderCellDef> Unit 1 </th>
-          <td mat-cell *matCellDef="let element"> {{ element.fromUnit }} </td>
-        </ng-container>
+          <!-- From Unit Column -->
+          <ng-container matColumnDef="fromUnit">
+            <th mat-header-cell *matHeaderCellDef> Unit 1 </th>
+            <td mat-cell *matCellDef="let element" class="unit-cell"> {{ element.fromUnit }} </td>
+          </ng-container>
 
-        <!-- Operation Column -->
-        <ng-container matColumnDef="operation">
-          <th mat-header-cell *matHeaderCellDef> Action </th>
-          <td mat-cell *matCellDef="let element"> 
-            <span class="operation-text">{{ element.operation || 'convert' }}</span>
-          </td>
-        </ng-container>
+          <!-- Operation Column -->
+          <ng-container matColumnDef="operation">
+            <th mat-header-cell *matHeaderCellDef> Method </th>
+            <td mat-cell *matCellDef="let element"> 
+              <span class="operation-pill">{{ element.operation || 'convert' }}</span>
+            </td>
+          </ng-container>
 
-        <!-- Converted Value Column -->
-        <ng-container matColumnDef="convertedValue">
-          <th mat-header-cell *matHeaderCellDef> Value 2 / Result </th>
-          <td mat-cell *matCellDef="let element"> 
-            <span *ngIf="element.type === 'COMPARISON'">
-              {{ element.convertedValue === element.inputValue ? 'TRUE' : 'FALSE' }}
-            </span>
-            <span *ngIf="element.type !== 'COMPARISON'">
-              {{ element.convertedValue }}
-            </span>
-          </td>
-        </ng-container>
+          <!-- Converted Value Column -->
+          <ng-container matColumnDef="convertedValue">
+            <th mat-header-cell *matHeaderCellDef> Result </th>
+            <td mat-cell *matCellDef="let element" class="font-numeric highlight-result"> 
+              <span *ngIf="element.type === 'COMPARISON'" [class.bool-true]="element.convertedValue === element.inputValue" [class.bool-false]="element.convertedValue !== element.inputValue">
+                {{ element.convertedValue === element.inputValue ? 'TRUE' : 'FALSE' }}
+              </span>
+              <span *ngIf="element.type !== 'COMPARISON'">
+                {{ element.convertedValue }}
+              </span>
+            </td>
+          </ng-container>
 
-        <!-- To Unit Column -->
-        <ng-container matColumnDef="toUnit">
-          <th mat-header-cell *matHeaderCellDef> Unit 2 / Result Unit </th>
-          <td mat-cell *matCellDef="let element"> {{ element.toUnit }} </td>
-        </ng-container>
+          <!-- To Unit Column -->
+          <ng-container matColumnDef="toUnit">
+            <th mat-header-cell *matHeaderCellDef> Target Unit </th>
+            <td mat-cell *matCellDef="let element" class="unit-cell"> {{ element.toUnit }} </td>
+          </ng-container>
 
-        <!-- Created At Column -->
-        <ng-container matColumnDef="createdAt">
-          <th mat-header-cell *matHeaderCellDef> Date </th>
-          <td mat-cell *matCellDef="let element"> {{ element.createdAt | date:'short' }} </td>
-        </ng-container>
+          <!-- Created At Column -->
+          <ng-container matColumnDef="createdAt">
+            <th mat-header-cell *matHeaderCellDef> Timestamp </th>
+            <td mat-cell *matCellDef="let element" class="date-cell"> {{ element.createdAt | date:'MMM d, h:mm a' }} </td>
+          </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="history-row"></tr>
+        </table>
+      </div>
 
-      <div *ngIf="dataSource.length === 0 && !errorMessage" class="no-data">
-        No history available.
+      <div *ngIf="dataSource.length === 0 && !errorMessage" class="no-data-premium">
+        <mat-icon>auto_awesome</mat-icon>
+        <p>Your activity feed is empty. Start measuring!</p>
       </div>
     </mat-card-content>
   </mat-card>

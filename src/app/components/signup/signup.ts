@@ -1,12 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Auth } from '../../services/auth';
+import { ThemeService } from '../../services/theme';
 
 @Component({
   selector: 'app-signup',
@@ -19,6 +21,7 @@ import { Auth } from '../../services/auth';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatIconModule,
   ],
   templateUrl: './signup.html',
   styleUrl: './signup.scss',
@@ -27,6 +30,8 @@ export class Signup {
   private fb = inject(FormBuilder);
   private authService = inject(Auth);
   private router = inject(Router);
+  public themeService = inject(ThemeService);
+
 
   signupForm: FormGroup = this.fb.group({
     userName: ['', [Validators.required]],

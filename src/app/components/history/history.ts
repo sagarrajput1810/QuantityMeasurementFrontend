@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { Measurement } from '../../services/measurement';
+import { ThemeService } from '../../services/theme';
 
 @Component({
   selector: 'app-history',
@@ -27,6 +28,7 @@ import { Measurement } from '../../services/measurement';
 })
 export class History implements OnInit {
   private measurementService = inject(Measurement);
+  public themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
 
   displayedColumns: string[] = ['type', 'inputValue', 'fromUnit', 'operation', 'convertedValue', 'toUnit', 'createdAt'];

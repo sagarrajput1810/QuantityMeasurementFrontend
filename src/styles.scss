@@ -1,39 +1,155 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
-html {
+// Define high-energy custom themes
+$light-theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: mat.$orange-palette,
+    tertiary: mat.$orange-palette,
+  ),
+  typography: (
+    brand-family: 'Poppins, Roboto, "Helvetica Neue", sans-serif',
+    plain-family: 'Poppins, Roboto, "Helvetica Neue", sans-serif',
+  ),
+));
+
+$dark-theme: mat.define-theme((
+  color: (
+    theme-type: dark,
+    primary: mat.$orange-palette,
+    tertiary: mat.$orange-palette,
+  ),
+  typography: (
+    brand-family: 'Poppins, Roboto, "Helvetica Neue", sans-serif',
+    plain-family: 'Poppins, Roboto, "Helvetica Neue", sans-serif',
+  ),
+));
+
+// Attractive Global Variables
+:root {
+  --primary-orange: #FF9800;
+  --dark-orange: #FF4500;
+  --glass-bg-light: rgba(255, 255, 255, 0.7);
+  --glass-bg-dark: rgba(18, 18, 18, 0.7);
+  --blur-amount: 12px;
+}
+
+html, body {
   height: 100%;
-  @include mat.theme(
-    (
-      color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
-      ),
-      typography: Roboto,
-      density: 0,
-    )
-  );
+  margin: 0;
+  font-family: 'Poppins', 'Roboto', sans-serif;
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
+  transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s ease;
+  background-attachment: fixed;
+  
+  @include mat.all-component-themes($light-theme);
+  background-color: #f8f9fa;
+  color: #1a1a1a;
   color-scheme: light;
 
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface);
-  font: var(--mat-sys-body-medium);
+  &.dark-theme {
+    @include mat.all-component-colors($dark-theme);
+    background-color: #000000;
+    color: #ffffff;
+    color-scheme: dark;
 
-  // Reset the user agent margin.
-  margin: 0;
-  height: 100%;
+    --mat-sys-surface: #0a0a0a;
+    --mat-sys-surface-container: #121212;
+    --mat-sys-primary: #FF4500; // Neon Dark Orange
+    --mat-sys-on-surface: #ffffff;
+    --mat-sys-outline: #333;
+  }
+
+  &.light-theme {
+    @include mat.all-component-colors($light-theme);
+    background-color: #ffffff;
+    --mat-sys-primary: #FF9800; // Bright Light Orange
+  }
 }
-/* You can add global styles to this file, and also import other style files */
+
+// Attractive Premium Refinements
+.glass-card {
+  backdrop-filter: blur(var(--blur-amount));
+  -webkit-backdrop-filter: blur(var(--blur-amount));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px !important;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.dark-theme .glass-card {
+  background: rgba(18, 18, 18, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8) !important;
+}
+
+.light-theme .glass-card {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(255, 152, 0, 0.1) !important;
+}
+
+// Glowing Buttons
+.btn-premium {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase;
+  padding: 0 32px !important;
+  height: 54px !important;
+  transition: all 0.3s ease !important;
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: 0.5s;
+  }
+
+  &:hover::after {
+    left: 100%;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 69, 0, 0.4) !important;
+  }
+}
+
+.dark-theme .btn-premium {
+  background: linear-gradient(135deg, #FF4500, #FF8C00) !important;
+  color: white !important;
+}
+
+.light-theme .btn-premium {
+  background: linear-gradient(135deg, #FF9800, #FFB74D) !important;
+  color: white !important;
+}
+
+// Form Field Refinements
+.mat-mdc-form-field {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-radius: 12px !important;
+  }
+}
+
+// Custom Scrollbar for premium feel
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #FF4500;
+  border-radius: 10px;
+}

@@ -1,41 +1,63 @@
 <div class="signup-container">
-  <mat-card class="signup-card">
+  <div class="background-blobs">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+  </div>
+
+  <div class="theme-toggle-container">
+    <button mat-icon-button (click)="themeService.toggleTheme()" class="glass-btn">
+      <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+    </button>
+  </div>
+
+  <mat-card class="signup-card glass-card">
     <mat-card-header>
-      <mat-card-title>Sign Up</mat-card-title>
+      <div class="brand-logo-container">
+        <div class="logo-inner-glow">
+          <mat-icon>person_add</mat-icon>
+        </div>
+      </div>
+      <mat-card-title>Create Account</mat-card-title>
+      <mat-card-subtitle>Join the Quantity Master community</mat-card-subtitle>
     </mat-card-header>
+
     <mat-card-content>
-      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="fill" class="full-width">
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="premium-form">
+        <mat-form-field appearance="outline" class="full-width">
           <mat-label>Username</mat-label>
           <input matInput formControlName="userName" placeholder="Ex. john_doe">
+          <mat-icon matPrefix>person</mat-icon>
           <mat-error *ngIf="signupForm.get('userName')?.hasError('required')">Username is required</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Email</mat-label>
-          <input matInput formControlName="email" type="email" placeholder="Ex. pat@example.com">
-          <mat-error *ngIf="signupForm.get('email')?.hasError('email')">Please enter a valid email address</mat-error>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email Address</mat-label>
+          <input matInput formControlName="email" type="email" placeholder="name@example.com">
+          <mat-icon matPrefix>alternate_email</mat-icon>
+          <mat-error *ngIf="signupForm.get('email')?.hasError('email')">Invalid email format</mat-error>
           <mat-error *ngIf="signupForm.get('email')?.hasError('required')">Email is required</mat-error>
         </mat-form-field>
 
-        <mat-form-field appearance="fill" class="full-width">
-          <mat-label>Password</mat-label>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>New Password</mat-label>
           <input matInput formControlName="password" type="password">
+          <mat-icon matPrefix>lock_open</mat-icon>
           <mat-error *ngIf="signupForm.get('password')?.hasError('required')">Password is required</mat-error>
-          <mat-error *ngIf="signupForm.get('password')?.hasError('minlength')">Password must be at least 8 characters</mat-error>
+          <mat-error *ngIf="signupForm.get('password')?.hasError('minlength')">Minimum 8 characters required</mat-error>
         </mat-form-field>
 
-        <div *ngIf="errorMessage" class="error-message">
-          {{ errorMessage }}
+        <div *ngIf="errorMessage" class="error-message attractive-error">
+          <mat-icon>error_outline</mat-icon> {{ errorMessage }}
         </div>
 
-        <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting" class="full-width">
-          {{ isSubmitting ? 'Signing up...' : 'Sign Up' }}
+        <button mat-raised-button class="btn-premium full-width signup-btn-glow" type="submit" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Creating account...' : 'Start Measuring Now' }}
         </button>
       </form>
     </mat-card-content>
-    <mat-card-footer>
-      <p>Already have an account? <a routerLink="/login">Login here</a></p>
+
+    <mat-card-footer class="premium-footer">
+      <p>Already a member? <a routerLink="/login">Log in here</a></p>
     </mat-card-footer>
   </mat-card>
 </div>
